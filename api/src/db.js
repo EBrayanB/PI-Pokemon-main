@@ -1,16 +1,25 @@
+//IMPORTACIONES NECESARIAS________________________________________________________________________________________________________________________________
+
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
-const { DB_USER, DB_PASSWORD, DB_HOST } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
+
+//Conexion sequelize con la DB___________________________________________________________________________________________________________________________
 
 const sequelize = new Sequelize(
-   `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/pokemon`,
+   `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`,
    {
-      logging: false, // set to console.log to see the raw SQL queries
-      native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+      
+      logging: false, // Establezca en console.log para ver las consultas SQL sin procesar.
+      native: false, // le permite a Sequelize saber que podemos usar pg-native para ~30% más de velocidad
    }
 );
+console.log("conectada base de datos");
+
+//____________________________________________________________________________________________________________________________________________________________
+
 const basename = path.basename(__filename);
 
 const modelDefiners = [];
@@ -39,9 +48,14 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
-const { Pokemon } = sequelize.models;
+const { Pokemon, Type } = sequelize.models;
 
-// Aca vendrian las relaciones
+// Relaciones de muchos a muchos__________________________________________________________________________________________________________________________
+
+Pokemon.belongsToMany(Type,{through:"PokemonType"});
+Type.belongsToMany(Pokemon,{through:"PokemonType"});
+
+//____________________________________________________________________________________________________________________________________________________________
 // Product.hasMany(Reviews);
 
 module.exports = {
