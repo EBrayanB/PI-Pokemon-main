@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
       native: false, // le permite a Sequelize saber que podemos usar pg-native para ~30% más de velocidad
    }
 );
-console.log("conectada base de datos");
+
 
 //____________________________________________________________________________________________________________________________________________________________
 
