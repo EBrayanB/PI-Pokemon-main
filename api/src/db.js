@@ -11,12 +11,10 @@ const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
 const sequelize = new Sequelize(
    `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`,
    {
-      
       logging: false, // Establezca en console.log para ver las consultas SQL sin procesar.
       native: false, // le permite a Sequelize saber que podemos usar pg-native para ~30% más de velocidad
    }
 );
-
 
 //____________________________________________________________________________________________________________________________________________________________
 
@@ -48,6 +46,7 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
+
 const { Pokemon, Type } = sequelize.models;
 
 // Relaciones de muchos a muchos__________________________________________________________________________________________________________________________
