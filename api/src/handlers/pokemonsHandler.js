@@ -10,6 +10,8 @@ const getPokemonsHandler = async (req,res) => {
             const res = await getPokemonByName(name);
             return res.status(200).json(res);
         }
+        const res = await getAllPokemons()
+        res.status(200).json(res)
     } catch (error) {
         res.status(400).json({error: error.message})
     }
