@@ -1,6 +1,43 @@
 const axios = require('axios');
 const { Pokemon, Type } = require('../db');
 
+const getPokemonApi = async () => {
+    const infoApi = (await axios.get('https://pokeapi.co/api/v2/pokemon?limit=100')).data.results;
+    
+    const allPokemonsApi = await Promise.all(infoApi.map(async (p) => {
+        const pokemonData = (await axios.get(p.url)).data;
+        return {
+            id: pokemonData.id,
+            name: pokemonData.name,
+            img: pokemonData.sprites.other.dream_world.front_default,
+            hp: pokemonData.stats[0].base_stat,
+            attack: pokemonData.stats[1].base_stat,
+            defense: pokemonData.stats[2].base_stat,
+            speed: pokemonData.stats[5].base_stat,
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            types: pokemonData.types.map((t) => ({
+                name: t.type.name,
+            })),
+        };
+    }));
+
+    return allPokemonsApi;
+};
+
+const getPokemonsDb = async () => {
+    const response = await Pokemon.findAll({
+        include: {
+            attributes: ['name'],
+            model: Type,
+            through: {
+                attributes: [],
+            },
+        }
+    });
+    return response;
+};
+
 const getAllPokemons = async () => {
     const pokemonApi = await getPokemonApi();
     const pokemonDb = await getPokemonsDb();
@@ -20,11 +57,9 @@ const getPokemonByName = async (name) => {
             speed: res.stats[5].base_stat,
             height: res.height,
             weight: res.weight,
-            types: res.types.map((t) => {
-                return {
-                    name: t.type.name,
-                };
-            }),
+            types: res.types.map((t) => ({
+                name: t.type.name,
+            })),
         }];
     } else {
         throw Error('No existe un Pokemon con ese nombre');
@@ -47,11 +82,9 @@ const getPokemonById = async (id) => {
         speed: res.stats[5].base_stat,
         height: res.height,
         weight: res.weight,
-        types: res.types.map((t) => {
-            return {
-                name: t.type.name,
-            };
-        }),
+        types: res.types.map((t) => ({
+            name: t.type.name,
+        })),
     };
 };
 
